@@ -1,0 +1,130 @@
+
+
+<script>
+        
+    var ros = new ROSLIB.Ros({
+        url: 'ws://<%=my_ip%>:9090'
+    });
+    // Create the main viewer.
+    var viewer = new ROS3D.Viewer({
+        divID: 'map',
+        width: 1100,
+        height: 600,
+        background: "#efefef",
+        near: 0.5,
+        antialias: true
+    });
+
+    // Setup the marker client.
+    var gridClient = new ROS3D.OccupancyGridClient({
+        ros: ros,
+        rootObject: viewer.scene,
+        topic: "/map",
+        continuous: true
+
+    });
+    console.log(gridClient);
+
+    var tfClient = new ROSLIB.TFClient({
+        ros: ros,
+        angularThres: 0.01,
+        transThres: 0.01,
+        rate: 10.0,
+        fixedFrame: '/map'
+    });
+
+    const scanclient = new ROS3D.LaserScan({
+        ros: ros,
+        topic: '/scan',
+        tfClient: tfClient,
+        rootObject: viewer.scene,
+        material: { size: 0.09, color: 0xff00ff }
+    })
+
+    // POLYGON
+    const my_polygon = new ROS3D.Polygon({
+        ros: ros,
+        topic: '/move_base/local_costmap/footprint',
+        tfClient: tfClient,
+        rootObject: viewer.scene,
+        material: { size: 0.5, color: 0x1111 }
+    })
+
+    // TFAXES
+    const my_axes = new ROS3D.TFAxes({
+        ros: ros,
+        frame_id: '/base_link',
+        tfClient: tfClient,
+        rootObject: viewer.scene,
+        scale: 0.25,
+        material: { size: 0.5, color: 0x1111 }
+    })
+
+
+    // ----------------------- Setup the marker client. -----------------------
+    var imClient = new ROS3D.InteractiveMarkerClient({
+        ros: ros,
+        tfClient: tfClient,
+        topic: '/simple_marker',
+        camera: viewer.camera,
+        rootObject: viewer.selectableObjects
+    });
+    // ----------------------- Setup the marker client. -----------------------
+
+    function send_topic(data) {
+        // fix
+        let publisher = new ROSLIB.Topic({
+            ros: ros,
+            name: '/roboAC/marker_node',
+            messageType: 'std_msgs/String'
+        });
+        let message = new ROSLIB.Message({
+            data: JSON.stringify(data)
+        });
+        publisher.publish(message);
+
+    }
+
+
+    async function clear_marker() {
+        send_topic({
+            mode: "clear"
+        })
+    }
+
+    async function init_marker() {
+        let plan_waypoint = JSON.parse('<%-JSON.stringify(plan_waypoint)%>')
+        console.log("My-test", plan_waypoint);
+        for (let i of plan_waypoint.chargepoint) {
+            send_topic({
+                mode: "insert",
+                name: i.name,
+                type: "charge",
+                pose: i.pose
+            })
+            // create_li_charge(i.name, "")
+        }
+        for (let i of plan_waypoint.waypoint) {
+            send_topic({
+                mode: "insert",
+                name: i.name,
+                type: i.type,
+                pose: i.pose
+            })
+            // create_li(i.name, i.type)
+        }
+        return parseInt(plan_waypoint.chargepoint.length) + parseInt(plan_waypoint.waypoint.length)
+    }
+
+    async function init() {
+        await clear_marker();
+        let size = await init_marker();
+
+        setTimeout(() => {
+          if (Object.keys(imClient.interactiveMarkers).length < size) {
+            location.reload();
+          }
+        }, 1200);
+    }
+    init();
+</script>

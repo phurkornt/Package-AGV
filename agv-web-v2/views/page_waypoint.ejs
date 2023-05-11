@@ -1,0 +1,745 @@
+<script src="/axios/axios.min.js"></script>
+
+<script>
+  function alert_fire(title) {
+    Swal.fire({
+      icon: 'success',
+      title: title
+    })
+  }
+  function alert_error(title) {
+    Swal.fire({
+      icon: 'error',
+      title: title
+    })
+  }
+</script>
+
+
+<% if( activity_state.status !=2){%>
+  <br>
+  <h1 class="text-center">สร้าง waypoint</h1>
+  <div class="container ">
+    <br>
+    <div class="card  mx-2">
+      <div class="card-body ">
+        <h4 class=" ">เลือกแผนที่</h4>
+        <hr>
+
+        <div class="container">
+          <div class="form-group">
+
+            <label>ชื่อแผนที่</label>
+            <select id="map_name" class="form-control select2" style="width: 100%;" onchange="getPlan()">
+
+              <option selected="selected" value="">เลือกแผนที่</option>
+
+              <% for(let i of map_files){%>
+
+                <option value="<%= i.split('.json')[0] %>" >
+                  <%= i.split('.json')[0] %>
+                </option>
+
+                <% } %>
+
+            </select>
+
+            <br>
+            <label class="">ชื่อPlan</label>
+            <select id="plan_name" class="form-control select2" style="width: 100%;">
+              <option value="create">สร้างPlanใหม่</option>
+            </select>
+          </div>
+
+          <div class="mt-4">
+            <button onclick="open_waypoint()" type="button"
+              class="btn p-4 btn-success btn-lg">เปิดระบบการสร้างการนำทาง</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+
+    function getPlan() {
+      map_name = document.querySelector("#map_name").value
+      // Clear value in plan_name
+      let tag_plan_name = document.querySelector("#plan_name")
+      
+      for (let i of tag_plan_name.children) {
+        if (i.value != "create")tag_plan_name.removeChild(i);
+      }
+
+      if (map_name != '') {
+        axios.get(`/waypoint_config?mode=getPlan&map_name=${map_name}`)
+          .then(response => {
+            if (response.data == 'Error') {
+              alert_error('Error')
+            } else {
+
+              const select = document.getElementById('plan_name');
+              for (let i in response.data.plan) {
+                const optionEl = document.createElement('option');
+                optionEl.value = i;
+                optionEl.textContent = i;
+                select.appendChild(optionEl);
+              }
+
+
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            alert_error('Error')
+          });
+      }
+
+
+    }
+
+
+    async function open_waypoint() {
+      let map_name = document.querySelector('#map_name').value.trim()
+      let plan_name = document.querySelector('#plan_name').value.trim()
+      let is_new = false;
+      // Alert
+      if (map_name.trim() == "") {
+        alert_error("กรุณาเลือกเเผนที่");
+        return
+      }
+
+      if (plan_name == "create") {
+        let value = await Swal.fire({
+          title: 'ใส่ชื่อของ plan',
+          input: 'text',
+          inputAttributes: {
+            autocapitalize: 'off'
+          },
+          showCancelButton: true,
+          confirmButtonText: 'ยืนยัน',
+          cancelButtonText: 'ยกเลิก',
+        })
+        if (value.isConfirmed) {
+          is_new = true;
+          plan_name = value.value.trim();
+        }
+        // console.log(value);
+      }
+
+      axios.get(`/waypoint_config?mode=open&map_name=${map_name}&plan_name=${plan_name}&is_new=${is_new}`)
+        .then(response => {
+          if (response.data == 'OK') {
+            alert_fire('ระบบกำลังเปิดใช้งาน')
+            setTimeout(() => {
+              location.reload();
+            }, 1500);
+          }
+          console.log(response.data);
+        })
+        .catch(error => {
+
+          console.log(error);
+          alert_error('Error')
+        });
+
+    }
+
+  </script>
+
+
+
+  <%}else{%>
+
+
+
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.89.0/build/three.min.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/eventemitter2@6.4/lib/eventemitter2.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.js"></script> -->
+    
+    <!-- <script src="../build/ros3d.js"></script>
+    <script src="../build/rosjs/three.min.js"></script>
+    <script src="../build/rosjs/eventemitter2.js"></script>
+    <script src="../build/rosjs/roslib.js"></script> -->
+
+    <div class="container-fluid">
+      <br>
+      <h1 class="text-center">สร้างเส้นทาง</h1>
+
+
+      <div class="row">
+
+        <div class="ml-5 col-xl-3 col-lg-12 col-12 card">
+          <div class="card-body ">
+            <h3 class="card-title ">waypoint : name</h3>
+            <hr>
+
+            <div>
+              <img src="/images/icons/flag.svg" style="width: 1.5rem;">
+              <p style="font-size: medium;" class="m-0 d-inline">waypoint ( ลำดับการเคลื่อนที่ )</p>
+
+              <div class="card-body px-0">
+
+                <ul id="waypoint_plan" class="todo-list" data-widget="todo-list">
+
+                  <!-- <li>
+                      <span class="handle">
+                        <i class="fas fa-ellipsis-v"></i>
+                        <i class="fas fa-ellipsis-v"></i>
+                      </span>
+                      <span class="text">A</span>
+                      <div class="tools">
+                        <i class="fas fa-edit" onclick="edit()" ></i>
+                      </div>
+                    </li> -->
+
+                </ul>
+              </div>
+            </div>
+
+
+            <div>
+              <img src="/images/icons/battery.svg" style="width: 1.5rem;">
+              <p style="font-size: medium;" class="m-0 d-inline">charge ( จุดชารจ์ )</p>
+
+              <div class="card-body px-0">
+                <ul id="charge_plan" class="todo-list" data-widget="todo-list">
+
+
+                  <!-- <li>
+                    <span class="handle">
+                      <i class="fas fa-ellipsis-v"></i>
+                      <i class="fas fa-ellipsis-v"></i>
+                    </span>
+                    <span class="text">charge A</span>
+                    <div class="tools">
+                      <i class="fas fa-edit"></i>
+                    </div>
+
+                  </li>
+                  <li>
+                    <span class="handle">
+                      <i class="fas fa-ellipsis-v"></i>
+                      <i class="fas fa-ellipsis-v"></i>
+                    </span>
+                    <span class="text">charge B</span>
+
+                    <div class="tools">
+                        <i class="fas fa-edit" onclick=""></i>
+                    </div>
+
+                  </li>
+                   -->
+
+
+
+                </ul>
+              </div>
+            </div>
+
+
+
+
+
+          </div>
+
+          <div class="m-3">
+            <button onclick="save_plan()" type="button" class="btn p-4 btn-success btn-lg">บันทึกเส้นทาง</button>
+            <button onclick="close_map()" type="button" class="btn p-4 btn-danger btn-lg">ปิดระบบ</button>
+          </div>
+
+        </div>
+
+        <div class="col-xl-8 col-lg-12 col-12  ">
+
+          <button id="btn_stop_point" type="button" class="btn  btn-default btn-lg">
+            <img src="/images/icons/flag.svg" style="width: 2rem;">
+            <p style="font-size: smaller;" class="m-0">stop point</p>
+          </button>
+
+          <button id="btn_pass_point" type="button" class="btn  btn-default btn-lg">
+            <img src="/images/icons/paper.svg" style="width: 2rem;">
+            <p style="font-size: smaller;" class="m-0">pass point</p>
+          </button>
+
+          <button id="btn_charge" type="button" class="btn  btn-default btn-lg">
+            <img src="/images/icons/battery.svg" style="width: 2rem;">
+            <p style="font-size: smaller;" class="m-0">charge</p>
+          </button>
+
+          <button id="btn_reset" type="button" class="btn  btn-default btn-lg">
+            <img src="/images/icons/reset.svg" style="width: 2rem;">
+            <p style="font-size: smaller;" class="m-0">reset</p>
+          </button>
+
+          <div id="map"></div>
+
+
+        </div>
+
+      </div>
+
+
+
+
+
+
+    </div>
+
+
+    <!-- For Page -->
+    <script>
+
+       function save_plan() {
+
+        myObj = imClient.interactiveMarkers;
+        let waypoint = [];
+        let chargepoint = [];
+        let myJson;
+
+        order = document.getElementById("waypoint_plan"); // หา DOM element โดยใช้ ID
+        const list_items = waypoint_plan.getElementsByTagName("li"); // หา element ของ list items
+        for (i of list_items) {
+          let name = i.querySelector(".text").textContent.trim()
+          waypoint.push({
+            name: myObj[name].name,
+            pose: myObj[name].pose,
+            type: myObj[name].message.description
+          })
+        }
+
+        for (let i in myObj) {
+          if (myObj[i].message.description == "charge") {
+            chargepoint.push({
+              name: myObj[i].name,
+              pose: myObj[i].pose,
+              type: myObj[i].message.description
+            })
+          }
+        }
+
+        // don't save IF
+        if(chargepoint.length <= 0){
+          alert_error("ไม่สามารถบันทึกได้ ควรมีจุดชารจ์ด้วย")
+          return;
+        }
+
+        
+
+        console.log(waypoint);
+        console.log(chargepoint);
+
+        myJson_waypoint = JSON.stringify(waypoint)
+        myJson_chargepoint = JSON.stringify(chargepoint)
+        
+
+        axios.get(`/waypoint_config?mode=save&waypoint=${myJson_waypoint}&chargepoint=${myJson_chargepoint}`)
+          .then(response => {
+            if (response.data == 'OK') {
+              alert_fire('บันทึกเส้นทางเรียบร้อยเเล้ว')
+            } else {
+              alert_error('มีชื่อแผนที่นี่อยู่เเล้ว')
+            }
+
+          })
+          .catch(error => {
+            console.log(error);
+            alert_error('Error')
+          });
+
+      }
+
+      async function close_map() {
+        // Clear marker
+        await clear_marker();
+
+        axios.get(`/waypoint_config?mode=close`)
+          .then(response => {
+            if (response.data == 'OK') {
+              alert_fire('ปิดระบบเรียบร้อยเเล้ว')
+              setTimeout(() => {
+                location.reload();
+              }, 1500);
+            } else {
+              alert_error('Error')
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            alert_error('Error')
+          });
+      }
+
+
+
+
+    </script>
+
+    <!-- Create node html -->
+    <script>
+
+      function create_li(name, type) {
+
+        ul = document.querySelector('#waypoint_plan');
+        const li = document.createElement('li');
+        const handleSpan = document.createElement('span');
+        handleSpan.classList.add('handle');
+
+
+        const ellipsisIcon1 = document.createElement('i');
+        switch (type) {
+          case "stop_point":
+            ellipsisIcon1.classList.add('fas', 'fa-flag');
+            break
+          case "pass_point":
+            ellipsisIcon1.classList.add('fas', 'fa-paper-plane');
+            break
+        }
+
+        handleSpan.appendChild(ellipsisIcon1);
+
+
+        const textSpan = document.createElement('span');
+
+        textSpan.classList.add('text');
+        textSpan.textContent = name;
+
+
+        const toolsDiv = document.createElement('div');
+        toolsDiv.classList.add('tools');
+
+        const editIcon = document.createElement('i');
+        editIcon.classList.add('fas', 'fa-edit');
+
+        // Even
+
+        editIcon.addEventListener('click', function (req) {
+          let parent = editIcon.parentNode.parentNode;
+          let name = parent.querySelector('.text').innerText
+
+          Swal.fire({
+            title: 'ยืนยันการลบ',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'ยืนยัน',
+            cancelButtonText: 'ยกเลิก'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              send_topic({
+                mode: "delete",
+                name: name
+              })
+              parent.parentNode.removeChild(parent);
+            }
+          })
+
+
+        });
+
+        // Even
+
+
+        toolsDiv.appendChild(editIcon);
+        li.appendChild(handleSpan);
+
+        li.appendChild(textSpan);
+        li.appendChild(toolsDiv);
+        ul.appendChild(li);
+
+      }
+
+      function create_li_charge(name) {
+        ul = document.querySelector('#charge_plan');
+        const li = document.createElement('li');
+        const handleSpan = document.createElement('span');
+        handleSpan.classList.add('handle');
+        const ellipsisIcon1 = document.createElement('i');
+        ellipsisIcon1.classList.add('fas', 'fa-ellipsis-v');
+        const ellipsisIcon2 = document.createElement('i');
+        ellipsisIcon2.classList.add('fas', 'fa-ellipsis-v');
+        handleSpan.appendChild(ellipsisIcon1);
+        handleSpan.appendChild(ellipsisIcon2);
+        const textSpan = document.createElement('span');
+        textSpan.classList.add('text');
+
+        textSpan.textContent = name;
+
+        const toolsDiv = document.createElement('div');
+        toolsDiv.classList.add('tools');
+        const editIcon = document.createElement('i');
+        editIcon.classList.add('fas', 'fa-edit');
+        // EVEN
+
+        editIcon.addEventListener('click', function (req) {
+          let parent = editIcon.parentNode.parentNode;
+          let name = parent.querySelector('.text').innerText
+
+          Swal.fire({
+            title: 'ยืนยันการลบ',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'ยืนยัน',
+            cancelButtonText: 'ยกเลิก'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              send_topic({
+                mode: "delete",
+                name: name
+              })
+              parent.parentNode.removeChild(parent);
+            }
+          })
+        });
+
+        // EVEN
+
+
+
+        toolsDiv.appendChild(editIcon);
+        li.appendChild(handleSpan);
+
+        li.appendChild(textSpan);
+        li.appendChild(toolsDiv);
+
+        ul.appendChild(li);
+      }
+
+    </script>
+
+    <!-- For ROS -->
+    <script>
+
+
+      var ros = new ROSLIB.Ros({
+        url: 'ws://<%=my_ip%>:9090'
+      });
+      // Create the main viewer.
+      var viewer = new ROS3D.Viewer({
+        divID: 'map',
+        width: 1100,
+        height: 600,
+        background: "#efefef",
+        near: 0.5,
+        antialias: true,
+        cameraPose: {
+          x: 25,
+          y: 15,
+          z: 3
+        }
+      });
+
+      // console.log(viewer);
+      // Setup the marker client.
+      var gridClient = new ROS3D.OccupancyGridClient({
+        ros: ros,
+        rootObject: viewer.scene,
+        topic: "/map",
+        continuous: true
+
+      });
+      console.log(gridClient);
+
+      var tfClient = new ROSLIB.TFClient({
+        ros: ros,
+        angularThres: 0.01,
+        transThres: 0.01,
+        rate: 10.0,
+        fixedFrame: '/map'
+      });
+
+      // const scanclient = new ROS3D.LaserScan({
+      //   ros: ros,
+      //   topic: '/scan',
+      //   tfClient: tfClient,
+      //   rootObject: viewer.scene,
+      //   material: { size: 0.09, color: 0xff00ff }
+      // })
+
+      // POLYGON
+      // const my_polygon = new ROS3D.Polygon({
+      //   ros: ros,
+      //   topic: '/move_base/local_costmap/footprint',
+      //   tfClient: tfClient,
+      //   rootObject: viewer.scene,
+      //   material: { size: 0.5, color: 0x1111 }
+      // })
+
+
+      // ----------------------- Setup the marker client. -----------------------
+      var imClient = new ROS3D.InteractiveMarkerClient({
+        ros: ros,
+        tfClient: tfClient,
+        topic: '/simple_marker',
+        camera: viewer.camera,
+        rootObject: viewer.selectableObjects
+      });
+      // ----------------------- Setup the marker client. -----------------------
+
+      function send_topic(data) {
+        // fix
+        let publisher = new ROSLIB.Topic({
+          ros: ros,
+          name: '/roboAC/marker_node',
+          messageType: 'std_msgs/String'
+        });
+        let message = new ROSLIB.Message({
+          data: JSON.stringify(data)
+        });
+        publisher.publish(message);
+
+      }
+      
+      // check match name
+      function is_name_match(name) {
+        let is_match = false;
+        const waypoint_items = waypoint_plan.getElementsByTagName("li"); // หา element ของ list items
+        const charge_items = charge_plan.getElementsByTagName("li"); // หา element ของ list items
+        for (i of waypoint_items) {
+          let n = i.querySelector(".text").textContent.trim()
+          if( n == name){
+            is_match = true;
+            break;
+          }
+        }
+        for (i of charge_items) {
+          let n = i.querySelector(".text").textContent.trim()
+          if( n == name){
+            is_match = true;
+            break;
+          }
+        }
+        return is_match;
+      }
+
+      document.querySelector("#btn_stop_point").addEventListener('click', () => {
+
+        name = prompt("set name") || ''
+        if (name.trim() == '') {
+          alert_error("กรุณาใส่ชื่อให้กับ waypoint")
+          return;
+        }else if( is_name_match(name.trim()) == true ){
+          alert_error("มีชื่อนี่อยู่เเล้ว")
+          return;
+        }
+
+        send_topic({
+          mode: "insert",
+          name: name,
+          type: "stop_point"
+        })
+
+        create_li(name, "stop_point")
+
+      })
+
+      document.querySelector("#btn_pass_point").addEventListener('click', () => {
+        name = prompt("set name") || ''
+        if (name.trim() == '') {
+          alert_error("กรุณาใส่ชื่อให้กับ waypoint")
+          return;
+        }else if( is_name_match(name.trim()) == true ){
+          alert_error("มีชื่อนี่อยู่เเล้ว")
+          return;
+        }
+        send_topic({
+          mode: "insert",
+          name: name,
+          type: "pass_point"
+        })
+        create_li(name, "pass_point")
+      })
+
+      document.querySelector("#btn_charge").addEventListener('click', () => {
+        name = prompt("set name") || ''
+        if (name.trim() == '') {
+          alert_error("กรุณาใส่ชื่อให้กับ waypoint")
+          return;
+        }else if( is_name_match(name.trim()) == true ){
+          alert_error("มีชื่อนี่อยู่เเล้ว")
+          return;
+        }
+
+        send_topic({
+          mode: "insert",
+          name: name,
+          type: "charge"
+        })
+        create_li_charge(name)
+
+      })
+
+
+      document.querySelector("#btn_reset").addEventListener('click', () => {
+        send_topic({
+          mode: "clear"
+        })
+
+      })
+
+
+
+      async function clear_marker() {
+        send_topic({
+          mode: "clear"
+        })
+      }
+
+      async function init_marker() {
+        let plan_waypoint = JSON.parse('<%-JSON.stringify(plan_waypoint)%>')
+        console.log("My-test ",plan_waypoint);
+        for (let i of plan_waypoint.chargepoint) {
+          send_topic({
+            mode: "insert",
+            name: i.name,
+            type: "charge",
+            pose: i.pose
+          })
+          create_li_charge(i.name, "")
+        }
+        for (let i of plan_waypoint.waypoint) {
+          send_topic({
+            mode: "insert",
+            name: i.name,
+            type: i.type,
+            pose: i.pose
+          })
+          create_li(i.name, i.type)
+        }
+        return parseInt(plan_waypoint.chargepoint.length) + parseInt(plan_waypoint.waypoint.length)
+      }
+
+      async function init() {
+        await clear_marker();
+        let size = await init_marker();
+        // Object.keys(a).length;
+        // console.log(size);
+        // console.log(imClient);
+
+        //----- stick block dock if error just reload page
+        setTimeout(() => {
+          if (Object.keys(imClient.interactiveMarkers).length < size) {
+            location.reload();
+          }
+        }, 2500);
+
+      }
+
+      init();
+
+
+    </script>
+
+
+
+
+
+
+
+    <%} %>

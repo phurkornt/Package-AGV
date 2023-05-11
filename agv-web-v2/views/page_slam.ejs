@@ -1,0 +1,383 @@
+<script src="/axios/axios.min.js"></script>
+
+
+
+<script>
+  function alert_fire(title) {
+    Swal.fire({
+        icon: 'success',
+        title: title
+    })
+  }
+  function alert_error(title) {
+    Swal.fire({
+        icon: 'error',
+        title: title
+    })
+  }
+
+</script>
+
+<% if( activity_state.status !=1){%>
+  <br>
+  <h1 class="text-center ">สร้างแผนที่</h1>
+  <div class="container ">
+
+    <div class="row">
+      
+      <div class="col-md-3"></div>
+
+      <div class="btn  col-md-6  col-12" >
+        <button onclick="open_slam()" type="button" class="btn p-4 btn-success btn-lg">เปิดระบบการสร้างแผนที่</button>
+      </div>
+
+      <div class="col-md-3"></div>
+
+      
+    </div>
+
+
+  </div>
+
+
+  <script>
+
+
+
+
+    function open_slam() {
+
+      axios.get('/slam_config?mode=open')
+        .then(response => {
+          if (response.data == 'OK') {
+            alert_fire('ระบบกำลังเปิดใช่งาน')
+            setTimeout(() => {
+              location.reload();
+            }, 1500);
+          }
+          console.log(response.data);
+        })
+        .catch(error => {
+
+          console.log(error);
+          alert_error('Error')
+        });
+
+    }
+
+  </script>
+
+
+
+  <%}else{%>
+
+
+
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.89.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/eventemitter2@6.4/lib/eventemitter2.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.js"></script>
+     -->
+    <!-- <script src="../build/ros3d.js"></script> -->
+
+    <div class="container-fluid">
+      <br>
+      <h1 class="text-center">สร้างแผนที่</h1>
+
+      <div class="row">
+
+          <div class="ml-5 col-xl-3 col-lg-12 col-12 card">
+            <div class="card-body ">
+              <h3 class="card-title ">ควบคุม</h3>
+              <hr>
+              <p>ความเร็วสูงสุด <b>max(1)</b></p>
+              <div class="container">
+                <div class="input-group mb-3">
+                  <span class="input-group-text">ความเร็วเชิงเส้น</span>
+                  <input name="linear_speed" type="number" class="form-control" value="0.2">
+                </div>
+                <div class="input-group mb-3">
+                  <span class="input-group-text">ความเร็วเชิงมุม</span>
+                  <input name="angular_speed" type="number" class="form-control" value="0.2">
+                </div>
+    
+                <div class="input-group mb-3">
+                  <span class="input-group-text">ตั้งชื่อแผนที่</span>
+                  <input name="name_map" type="text" class="form-control" value="">
+                </div>
+              </div>
+    
+              <br>
+    
+              <div class="row container-fluid">
+                <div id="m-f" class="col-3  btn btn-outline-secondary p-3   ">เดินทาง</div>
+                <div id="m-b" class="col-3  btn btn-outline-secondary p-3   ">ถอยหลัง</div>
+                <div id="m-l" class="col-3  btn btn-outline-secondary p-3   ">หมุนซ้าย</div>
+                <div id="m-r" class="col-3  btn btn-outline-secondary p-3   ">หมุนขวา</div>
+                <div id="m-s" class="col-12 btn btn-outline-danger p-3   ">หยุด</div>
+              </div>
+    
+              <div class="mt-4">
+    
+                <button onclick="save_map()" type="button" class="btn p-4 btn-success btn-lg">บันทึกแผนที่</button>
+                <button onclick="close_map()" type="button" class="btn p-4 btn-danger btn-lg">ปิดระบบ</button>
+    
+              </div>
+              
+            </div>
+
+          </div>
+          
+          <div class="col-xl-8 col-lg-12 col-12  " id="map"></div>
+
+      </div>
+
+      
+
+
+
+
+
+    </div>
+
+
+    <!-- For Page -->
+    <script>
+      function save_map() {
+
+        map_name = document.querySelector('input[name=name_map]').value;
+        if(map_name.trim() == ''){
+          alert_error('กรุณาใส่ชื่อของแผนที่')
+        }else{
+          axios.get(`/slam_config?mode=save&map_name=${map_name}`)
+            .then(response => {
+              if (response.data == 'OK') {
+                alert_fire('บันทึกแผนที่เรียบร้อยเเล้ว')
+              }else{
+                alert_error('มีชื่อแผนที่นี่อยู่เเล้ว')
+              }
+  
+            })
+            .catch(error => {
+              console.log(error);
+              alert_error('Error')
+            });
+        }
+      }
+
+      function close_map() {
+
+        axios.get(`/slam_config?mode=close`)
+          .then(response => {
+            if (response.data == 'OK') {
+              alert_fire('ปิดระบบเรียบร้อยเเล้ว')
+              setTimeout(() => {
+                location.reload();
+              }, 1500);
+            }else{
+              alert_error('Error')
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            alert_error('Error')
+          });
+      }
+      
+   
+
+
+    </script>
+
+    <!-- For ROS -->
+    <script>
+      /**
+       * Setup all visualization elements when the page is loaded.
+       */
+      // Connect to ROS.
+      var ros = new ROSLIB.Ros({
+        url: 'ws://<%=my_ip%>:9090'
+      });
+      // Create the main viewer.
+      var viewer = new ROS3D.Viewer({
+        divID: 'map',
+        width: 1100,
+        height: 600,
+        background: "#efefef",
+        near: 0.5,
+        antialias: true,
+        cameraPose: {
+          x: 25,
+          y: 15,
+          z: 3
+        }
+      });
+
+      // console.log(viewer);
+      // Setup the marker client.
+      var gridClient = new ROS3D.OccupancyGridClient({
+        ros: ros,
+        rootObject: viewer.scene,
+        topic: "/map",
+        continuous: true
+
+      });
+      console.log(gridClient);
+
+      var tfClient = new ROSLIB.TFClient({
+        ros: ros,
+        angularThres: 0.01,
+        transThres: 0.01,
+        rate: 10.0,
+        fixedFrame: '/map'
+      });
+
+      const scanclient = new ROS3D.LaserScan({
+        ros: ros,
+        topic: '/scan',
+        tfClient: tfClient,
+        rootObject: viewer.scene,
+        material: { size: 0.09, color: 0xff00ff }
+      })
+
+      // POLYGON
+      const my_polygon = new ROS3D.Polygon({
+        ros: ros,
+        topic: '/move_base/local_costmap/footprint',
+        tfClient: tfClient,
+        rootObject: viewer.scene,
+        material: { size: 0.5, color: 0x1111 }
+      })
+
+      // TFAXES
+      const my_axes = new ROS3D.TFAxes({
+        ros: ros,
+        frame_id: '/base_link',
+        tfClient: tfClient,
+        rootObject: viewer.scene,
+        scale:0.25,
+        material: { size: 0.5, color: 0x1111 }
+      })
+
+      // Setup the marker client.
+      var imClient = new ROS3D.InteractiveMarkerClient({
+        ros: ros,
+        tfClient: tfClient,
+        topic: '/simple_marker',
+        camera: viewer.camera,
+        rootObject: viewer.selectableObjects
+      });
+
+
+      // document.querySelector("#btn").addEventListener('click', () => {
+
+      //   console.log("1");
+      //   var publisher = new ROSLIB.Topic({
+      //     ros: ros,
+      //     name: '/roboAC/manage_ui_waypoint',
+      //     messageType: 'std_msgs/String'
+      //   });
+      //   n = prompt("set name")
+      //   myData = {
+      //     mode: "insert",
+      //     name: n
+      //   }
+
+
+      //   var message = new ROSLIB.Message({
+      //     data: JSON.stringify(myData)
+      //   });
+
+      //   publisher.publish(message);
+
+      // })
+
+      // document.querySelector("#btn2").addEventListener('click', () => {
+      //   var publisher = new ROSLIB.Topic({
+      //     ros: ros,
+      //     name: '/roboAC/manage_ui_waypoint',
+      //     messageType: 'std_msgs/String'
+      //   });
+      //   myData = {
+      //     mode: "clear"
+      //   }
+
+
+      //   var message = new ROSLIB.Message({
+      //     data: JSON.stringify(myData)
+      //   });
+
+      //   publisher.publish(message);
+
+      // })
+
+
+
+
+
+
+
+      //  ---------------------------- CMD_VEL ----------------------------
+
+      cmd_vel_listener = new ROSLIB.Topic({
+        ros: ros,
+        name: "/cmd_vel",
+        messageType: 'geometry_msgs/Twist'
+      });
+      move = function (linear, angular) {
+        var twist = new ROSLIB.Message({
+          linear: {
+            x: linear,
+            y: 0,
+            z: 0
+          },
+          angular: {
+            x: 0,
+            y: 0,
+            z: angular
+          }
+        });
+
+        cmd_vel_listener.publish(twist);
+      }
+      function getSpeed() {
+        let ang = parseFloat(document.querySelector("input[name=angular_speed]").value)
+        let lin = parseFloat(document.querySelector("input[name=linear_speed]").value)
+        let max_limit = 1;
+        if (ang >= max_limit) ang = max_limit;
+        if (lin >= max_limit) lin = max_limit;
+        return [lin, ang];
+      }
+      document.querySelector('#m-f').addEventListener('click', function () {
+        const [lin, ang] = getSpeed();
+        move(lin, 0);
+      })
+      document.querySelector('#m-b').addEventListener('click', function () {
+        const [lin, ang] = getSpeed();
+        move(-lin, 0);
+      })
+      document.querySelector('#m-l').addEventListener('click', function () {
+        const [lin, ang] = getSpeed();
+        move(0, ang);
+      })
+      document.querySelector('#m-r').addEventListener('click', function () {
+        const [lin, ang] = getSpeed();
+        move(0, -ang);
+      })
+      document.querySelector('#m-s').addEventListener('click', function () {
+        move(0, 0);
+      })
+
+      //  ---------------------------- CMD_VEL ----------------------------
+
+
+
+    </script>
+
+
+
+
+
+
+
+    <%} %>

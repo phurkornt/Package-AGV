@@ -1,0 +1,123 @@
+{
+    "map": "Tetsna",
+    "plan": {
+        "1": {
+            "waypoint": [
+                {
+                    "name": "12",
+                    "pose": {
+                        "position": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0.01
+                        },
+                        "orientation": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0,
+                            "w": 1
+                        }
+                    },
+                    "type": "stop_point"
+                },
+                {
+                    "name": "123",
+                    "pose": {
+                        "position": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0.01
+                        },
+                        "orientation": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0,
+                            "w": 1
+                        }
+                    },
+                    "type": "pass_point"
+                }
+            ],
+            "chargepoint": [
+                {
+                    "name": "3",
+                    "pose": {
+                        "position": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0.01
+                        },
+                        "orientation": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0,
+                            "w": 1
+                        }
+                    },
+                    "type": "charge"
+                }
+            ]
+        },
+        "2": {
+            "waypoint": [],
+            "chargepoint": [
+                {
+                    "name": "3",
+                    "pose": {
+                        "position": {
+                            "x": 0.8751996250567049,
+                            "y": 0.49706131424938,
+                            "z": 0.01
+                        },
+                        "orientation": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0,
+                            "w": 1
+                        }
+                    },
+                    "type": "charge"
+                }
+            ]
+        },
+        "my-test": {
+            "waypoint": [
+                {
+                    "name": "1",
+                    "pose": {
+                        "position": {
+                            "x": 0.45509437953716536,
+                            "y": -1.9306716888259163,
+                            "z": 0.01
+                        },
+                        "orientation": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0,
+                            "w": 1
+                        }
+                    },
+                    "type": "stop_point"
+                },
+                {
+                    "name": "2",
+                    "pose": {
+                        "position": {
+                            "x": 0.4771732165980962,
+                            "y": 1.9328901700608838,
+                            "z": 0.01
+                        },
+                        "orientation": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0,
+                            "w": 1
+                        }
+                    },
+                    "type": "stop_point"
+                }
+            ],
+            "chargepoint": []
+        }
+    }
+}

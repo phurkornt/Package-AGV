@@ -1,0 +1,275 @@
+<script src="/axios/axios.min.js"></script>
+
+<script>
+  function alert_fire(title) {
+    Swal.fire({
+      icon: 'success',
+      title: title
+    })
+  }
+  function alert_error(title) {
+    Swal.fire({
+      icon: 'error',
+      title: title
+    })
+  }
+</script>
+
+
+<% if( activity_state.status !=3){%>
+
+  <br>
+  <h1 class="text-center">ระบบการนำทาง</h1>
+  <div class="container ">
+    <br>
+    <div class="card  mx-2">
+      <div class="card-body ">
+        <h4 class=" ">เลือกแผนที่</h4>
+        <hr>
+
+        <div class="container">
+            <div class="form-group">
+
+                <label>ชื่อแผนที่</label>
+                <select id="map_name" class="form-control select2" style="width: 100%;" >
+
+                <option selected="selected" value="">เลือกแผนที่</option>
+
+                <% for(let i of map_files){%>
+
+                    <option value="<%= i.split('.json')[0] %>" >
+                    <%= i.split('.json')[0] %>
+                    </option>
+
+                    <% } %>
+
+                </select>
+
+            </div>
+
+            <div class="mt-4">
+                <button onclick="open_waypoint()" type="button"
+                class="btn p-4 btn-success btn-lg">เปิดระบบการเคลื่อนที่</button>
+            </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+
+
+    async function open_waypoint() {
+      let map_name = document.querySelector('#map_name').value.trim()
+      let is_new = false;
+      if (map_name.trim() == "") {
+        alert_error("กรุณาเลือกเเผนที่");
+        return
+      }
+
+      axios.get(`/navigation_config?mode=open&map_name=${map_name}`)
+        .then(response => {
+          if (response.data == 'OK') {
+            alert_fire('ระบบกำลังเปิดใช้งาน')
+            setTimeout(() => {
+              location.reload();
+            }, 1500);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          alert_error('Error')
+        });
+    }
+
+  </script>
+
+
+
+  <%}else{%>
+    
+
+
+    <% if(embed_plan_name!=''){%>
+
+      <div class="container-fluid">
+        <br>
+        <h1 class="text-center">ระบบการนำทาง</h1>
+        <div class="row">
+          <div class="ml-5 col-xl-3 col-lg-12 col-12 card">
+            <div class="card-body ">
+              <h3 class="card-title mb-1"> Waypoint </h3>
+              <hr>
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">ชื่อตำเเหน่ง</th>
+                    <th scope="col">สถานะ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% let n = 1; %>
+                  <% for( let i of plan_waypoint.waypoint ) { %>
+                  <tr>
+                    <td class="text-lg"><%= n++ %></td>
+                    <td class="text-lg"><%= i.name %></td>
+                    <td>.</td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+            <div class="m-4">
+              <button onclick="get_back()" type="button" class="btn p-3 btn-danger btn-lg">ย้อนกลับ</button>
+            </div>
+            
+          </div>
+
+          
+          <div class="col-xl-8 col-lg-12 col-12  ">
+            <div class="row">
+              <div class="col-6">
+                <p>test Battery 10%</p>
+                <p>test Velocity 0.15m/s</p>
+              </div>
+              <div class="col-6">
+                <button onclick="my_test('set')"type="button" class="btn p-3 btn-success btn-lg">for-test -> set</button>
+                <button onclick="my_test('run')"type="button" class="btn p-3 btn-success btn-lg">เคลื่อนที่</button>
+                <button onclick="my_test('pause')" type="button" class="btn p-3 btn-warning btn-lg">หยุดเคลื่อนที่</button>
+                <button onclick="my_test('sw')" type="button" class="btn p-3 btn-warning btn-lg">for-test -> sw</button>
+              </div>
+            </div>
+
+            
+            <div id="map"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <script>
+        function my_test(mode){
+          axios.get(`/navigation_nav?mode=${mode}`)
+          .then(response => {
+          })
+          .catch(error => {
+            console.log(error);
+            alert_error('Error')
+          });
+
+        }
+        function get_back() {
+          clear_marker();
+          axios.get(`/navigation_config?mode=get_back`)
+            .then(response => {
+              if (response.data == 'OK') {
+                // alert_fire('')
+                  location.reload();
+              } else {
+                alert_error('Error')
+              }
+            })
+            .catch(error => {
+              console.log(error);
+              alert_error('Error')
+            });
+        }
+
+
+      </script>
+
+      <%- include('./js/page_nav/js_nav_run'); %>
+      
+    <%}else{%>
+
+
+    <div class="container-fluid">
+      <br>
+      <h1 class="text-center">ระบบการนำทาง</h1>
+      <div class="row">
+        <div class="ml-5 col-xl-3 col-lg-12 col-12 card">
+          <div class="card-body ">
+            <h3 class="card-title mb-1">แผน waypoint ของระบบ</h3>
+            <hr>
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">ชื่อ waypoint</th>
+                  <th scope="col">เลือกใช้งาน</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% let n = 1; %>
+                <% for( let i in plan_waypoint.plan ) { %>
+                <tr>
+                  <td class="text-lg"><%= n++ %></th>
+                  <td class="text-lg"><%= i %></td>
+                  <td><button onclick="run_plan('<%= i %>')" type="button" class="btn btn-success">ใช้งาน</button></td>
+                </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+          <div class="m-3">
+            <button onclick="close_map()" type="button" class="btn p-4 btn-danger btn-lg">ปิดระบบ</button>
+          </div>
+        </div>
+        <div class="col-xl-8 col-lg-12 col-12  ">
+          <button id="btn_stop_point" type="button" class="btn  btn-default btn-lg">
+            <img src="/images/icons/flag.svg" style="width: 2rem;">
+            <p style="font-size: smaller;" class="m-0">init pose</p>
+          </button>
+          <div id="map"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- For Page -->
+    <script>
+      function run_plan(plan) {
+        plan_name = plan || ''
+        axios.get(`/navigation_config?mode=run_plan&plan_name=${plan_name}`)
+          .then(response => {
+            if (response.data == 'OK') {
+              location.reload();
+            } else {
+              alert_error('Error')
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            alert_error('Error')
+          });
+      }
+      function close_map() {
+        clear_marker();
+        axios.get(`/navigation_config?mode=close`)
+          .then(response => {
+            if (response.data == 'OK') {
+              alert_fire('ปิดระบบเรียบร้อยเเล้ว')
+              setTimeout(() => {
+                location.reload();
+              }, 1500);
+            } else {
+              alert_error('Error')
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            alert_error('Error')
+          });
+      }
+    </script>
+    <%- include('./js/page_nav/js_nav_select'); %>
+    <%} %>
+
+    
+
+
+
+
+  <%} %>

@@ -1,0 +1,14 @@
+<launch>
+    <!-- web -->
+    <node pkg="rosbridge_server" type="rosbridge_websocket" name="rosbridge_server" />
+    <node pkg="tf2_web_republisher" type="tf2_web_republisher" name="tf2_web_republisher" />
+    <node pkg="robot_pose_publisher" type="robot_pose_publisher" name="robot_pose_publisher" />
+    <node pkg="interactive_marker_proxy" type="proxy" name="interactive_marker_proxy_basic_controls">
+        <remap from="target_frame" to="/map" />
+        <remap from="topic_ns" to="/simple_marker" />
+    </node>
+
+    <!-- <node name="manager_node"  pkg="manager_node.py" type="/home/paul/agv/roboAC/manager_node/manager_node.py" />
+    <node name="marker_node"  pkg="marker_node.py" type="/home/paul/agv/roboAC/marker_node/marker_node.py" /> -->
+
+</launch>

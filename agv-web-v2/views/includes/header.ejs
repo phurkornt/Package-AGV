@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <title>Hello</title>
+  <link rel="icon" type="image/jpg" href="../images/bg-01.jpg"/>
+
+  <!-- ####### MAKE IT OFFLINE #######  -->
+  
+  <!-- Google Font: Source Sans Pro -->
+  <!-- <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400&display=swap" rel="stylesheet"> -->
+
+  <link href="../fonts/nato-font/css.css" rel="stylesheet">
+  <link href="../fonts/nato-font/css2.css" rel="stylesheet">
+
+  
+  <!-- <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"> -->
+  
+  
+  <!-- ####### MAKE IT OFFLINE #######  -->
+
+
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+  <!-- IonIcons -->
+  <!-- <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"> -->
+  <!-- Theme style -->
+  <link rel="stylesheet" href="dist/css/adminlte.min.css">
+  
+
+  <!-- ============================== Script ==============================-->
+  <!-- jQuery -->
+  <script src="../../plugins/jquery/jquery.min.js"></script>
+  <!-- Bootstrap 4 -->
+  <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- DataTables  & Plugins -->
+  
+  <script src="../../plugins/jszip/jszip.min.js"></script>
+  <script src="../../plugins/pdfmake/pdfmake.min.js"></script>
+  <script src="../../plugins/pdfmake/vfs_fonts.js"></script>
+
+
+  <!-- Bootstrap -->
+  <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- AdminLTE -->
+  <script src="dist/js/adminlte.js"></script>
+  <!-- ICON -->
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"> -->
+  <!-- ============================== Script ==============================-->
+  <!-- Alert  -->
+  <link rel="stylesheet" href="../../plugins/toastr/toastr.min.css">
+  <script src="../../plugins/toastr/toastr.min.js"></script>
+  <!-- Select2 -->
+  <link rel="stylesheet" href="../../plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="../../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+  <script src="../../plugins/select2/js/select2.full.min.js"></script>
+
+  <!-- Time picker  -->
+  <link rel="stylesheet" href="dist/css/timepicker.min.css">
+  <script src="dist/js/timepicker.min.js"></script>
+
+
+  <script src="/sweetalert2/sweetalert2.all.min.js"></script>
+
+
+
+
+  <!-- ####### MAKE IT OFFLINE #######  -->
+
+  <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.89.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/eventemitter2@6.4/lib/eventemitter2.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.js"></script> -->
+
+  <script src="../build/rosjs/three.min.js"></script>
+  <script src="../build/rosjs/eventemitter2.js"></script>
+  <script src="../build/rosjs/roslib.js"></script>
+  
+  <!-- ####### MAKE IT OFFLINE #######  -->
+
+  <script src="../build/ros3d.js"></script>
+
+
+
+  <style>
+    body{
+      font-family: 'Noto Sans Thai', sans-serif;
+    }
+  </style>
+</head>
+
+
+<body class="hold-transition sidebar-mini">
+  <!-- Error Status -->
+  
+  
+  
+  <!-- Error Status -->
+
+
+
+
+  <div class="wrapper">
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+      <!-- Left navbar links -->
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <!-- <li class="nav-item d-none d-sm-inline-block">
+          <a href="/" class="nav-link">หน้าเเรก</a>
+        </li> -->
+       
+      </ul>
+  
+      <!-- Right navbar links -->
+      <ul class="navbar-nav ml-auto">
+  
+        <li class="nav-item">
+          <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+            <i class="fas fa-expand-arrows-alt"></i>
+          </a>
+        </li>
+  
+        <li class="nav-item">
+          <a class="nav-link " role="button">
+           Batterry 90%
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link " role="button">
+            <%= activity_state.activity %>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="/logout" role="button">
+            ออกจากระบบ
+          </a>
+        </li>
+  
+      </ul>
+    </nav>
+    <!-- /.navbar -->
+  
+    <!-- Main Sidebar Container -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <!-- Brand Logo -->
+      <a href="#" class="brand-link bg-purple text-center">
+        <h5 class="brand-text  text-white">
+        </h5>
+      </a>
+  
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex justify-content-center">
+          
+          <div class="info">
+            <h5 class="text-center text-white text-md">
+              <i class="bi bi-person-circle mr-2"></i>
+            </h5>
+          </div>
+        </div>
+ 
+  
+         <!-- Sidebar Menu -->
+         <nav class="mt-2">
+          <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <!-- Add icons to the links using the .nav-icon class
+                 with font-awesome or any other icon font library -->
+            <li class="nav-item menu-open">
+
+              <li class="nav-item">
+                <a href="/slam" class="nav-link">
+                    <i class="nav-icon fas fa-edit"></i>
+                    <p>ระบบสร้างแผนที่</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="/waypoint" class="nav-link">
+                    <i class="nav-icon fas fa-edit"></i>
+                    <p>ระบบจัดการการนำทาง</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="/navigation" class="nav-link">
+                    <i class="nav-icon fas fa-edit"></i>
+                    <p>ระบบการนำทาง</p>
+                </a>
+              </li>
+                
+              
+            </li>
+            
+          </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+
+        
+      </div>
+      <!-- /.sidebar -->
+    </aside>
+  
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+
+
+  
+  
+ 
