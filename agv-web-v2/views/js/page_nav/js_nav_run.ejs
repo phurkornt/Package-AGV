@@ -33,32 +33,32 @@
         fixedFrame: '/map'
     });
 
-    const scanclient = new ROS3D.LaserScan({
-        ros: ros,
-        topic: '/scan',
-        tfClient: tfClient,
-        rootObject: viewer.scene,
-        material: { size: 0.09, color: 0xff00ff }
-    })
+    // const scanclient = new ROS3D.LaserScan({
+    //     ros: ros,
+    //     topic: '/scan',
+    //     tfClient: tfClient,
+    //     rootObject: viewer.scene,
+    //     material: { size: 0.09, color: 0xff00ff }
+    // })
 
     // POLYGON
-    const my_polygon = new ROS3D.Polygon({
-        ros: ros,
-        topic: '/move_base/local_costmap/footprint',
-        tfClient: tfClient,
-        rootObject: viewer.scene,
-        material: { size: 0.5, color: 0x1111 }
-    })
+    // const my_polygon = new ROS3D.Polygon({
+    //     ros: ros,
+    //     topic: '/move_base/local_costmap/footprint',
+    //     tfClient: tfClient,
+    //     rootObject: viewer.scene,
+    //     material: { size: 0.5, color: 0x1111 }
+    // })
 
     // TFAXES
-    const my_axes = new ROS3D.TFAxes({
-        ros: ros,
-        frame_id: '/base_link',
-        tfClient: tfClient,
-        rootObject: viewer.scene,
-        scale: 0.25,
-        material: { size: 0.5, color: 0x1111 }
-    })
+    // const my_axes = new ROS3D.TFAxes({
+    //     ros: ros,
+    //     frame_id: '/base_link',
+    //     tfClient: tfClient,
+    //     rootObject: viewer.scene,
+    //     scale: 0.25,
+    //     material: { size: 0.5, color: 0x1111 }
+    // })
 
 
     // ----------------------- Setup the marker client. -----------------------
@@ -119,6 +119,10 @@
     async function init() {
         await clear_marker();
         let size = await init_marker();
+
+        send_topic({
+                mode: "display_robot"
+        })
 
         setTimeout(() => {
           if (Object.keys(imClient.interactiveMarkers).length < size) {

@@ -15,7 +15,8 @@ exports.slam = (req, res) => {
     res.render('main_page',{
         page:"page_slam",
         activity_state:activity_state.getData(),
-        my_ip:ip.address
+        my_ip:ip.address,
+        title:"Create Map"
     });
 };
 

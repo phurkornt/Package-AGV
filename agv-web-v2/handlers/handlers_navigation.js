@@ -38,7 +38,8 @@ exports.navigation = (req, res) => {
         map_files:map_files,
         embed_mapName:embed_mapName,
         embed_plan_name:embed_plan_name,
-        plan_waypoint:plan_waypoint
+        plan_waypoint:plan_waypoint,
+        title:"Navigation"
     });
 };
 
@@ -65,12 +66,13 @@ exports.navigation_config = (req, res) => {
                         mode:"start"
                     });
                 }, 1000);
-
-                node_manager.send_data({
-                    topic:"nav_map",
-                    script:`rosrun map_server map_server /home/paul/agv/src/roboAC/manager/map/${embed_mapName}.yaml`,
-                    mode:"start"
-                });
+                setTimeout(() => {
+                    node_manager.send_data({
+                        topic:"nav_map",
+                        script:`rosrun map_server map_server /home/paul/agv/src/roboAC/manager/map/${embed_mapName}.yaml`,
+                        mode:"start"
+                    });
+                }, 500);
                 activity_state.writeData(3);
                 outData = 'OK'
             }

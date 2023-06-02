@@ -32,7 +32,8 @@ exports.waypoint = (req, res) => {
         my_ip:ip.address,
         embed_mapName:embed_mapName,
         embed_plan_name:embed_plan_name,
-        plan_waypoint:plan_waypoint
+        plan_waypoint:plan_waypoint,
+        title:"Create Waypoint"
     });
 };
 

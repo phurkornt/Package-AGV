@@ -58103,7 +58103,7 @@ var ROS3D = (function (exports, ROSLIB) {
 	        lineType: options.lineType || 'full',
 	        lineDashLength: options.lineDashLength || 0.1
 	      });
-
+		  
 	    this.sn = new SceneNode({
 	      frameID: this.frame_id,
 	      tfClient : this.tfClient,

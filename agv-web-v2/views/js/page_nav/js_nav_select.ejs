@@ -24,7 +24,7 @@
         continuous: true
 
     });
-    console.log(gridClient);
+    // console.log(gridClient);
 
     var tfClient = new ROSLIB.TFClient({
         ros: ros,
@@ -43,23 +43,23 @@
     })
 
     // POLYGON
-    const my_polygon = new ROS3D.Polygon({
-        ros: ros,
-        topic: '/move_base/local_costmap/footprint',
-        tfClient: tfClient,
-        rootObject: viewer.scene,
-        material: { size: 0.5, color: 0x1111 }
-    })
+    // const my_polygon = new ROS3D.Polygon({
+    //     ros: ros,
+    //     topic: '/move_base/local_costmap/footprint',
+    //     tfClient: tfClient,
+    //     rootObject: viewer.scene,
+    //     material: { size: 0.5, color: 0x1111 }
+    // })
 
     // TFAXES
-    const my_axes = new ROS3D.TFAxes({
-        ros: ros,
-        frame_id: '/base_link',
-        tfClient: tfClient,
-        rootObject: viewer.scene,
-        scale: 0.25,
-        material: { size: 0.5, color: 0x1111 }
-    })
+    // const my_axes = new ROS3D.TFAxes({
+    //     ros: ros,
+    //     frame_id: '/base_link',
+    //     tfClient: tfClient,
+    //     rootObject: viewer.scene,
+    //     scale: 0.35,
+    //     material: { size: 0.5, color: 0x1111 }
+    // })
 
 
     // ----------------------- Setup the marker client. -----------------------
@@ -86,24 +86,51 @@
 
     }
 
-
-    document.querySelector("#btn_stop_point").addEventListener('click', () => {
-
-        name = prompt("set name") || ''
-        if (name.trim() == '') {
-            alert_error("กรุณาใส่ชื่อให้กับ waypoint")
-            return;
-        } else if (is_name_match(name.trim()) == true) {
-            alert_error("มีชื่อนี่อยู่เเล้ว")
-            return;
-        }
-
+    let one_click_init_pose = true
+    document.querySelector("#btn_init_pose").addEventListener('click', () => {
+        if(one_click_init_pose == false)return;
         send_topic({
-            mode: "insert",
-            name: name,
-            type: "stop_point"
+            mode: "init_pose",
+            name: "init_pose"
         })
+        let btn_confirm = document.createElement("button");
+        btn_confirm.innerHTML = "<br> Confirm";
+        btn_confirm.classList='btn  btn-default btn-lg'
+        btn_confirm.id = "btn_confirm"
+        
+        // let btn_cancle = document.createElement("button");
+        // btn_cancle.innerHTML = "<br> Exit";
+        // btn_cancle.classList='btn  btn-default btn-lg'
+        // btn_cancle.id = "btn_cancle"
+        
+        // ค้นหา element ที่มี id เป็น "place_btn"
+        var element = document.getElementById("place_btn");
+
+        // เพิ่มปุ่มลงใน element
+        element.insertBefore(btn_confirm, element.childNodes[2]);
+        // element.insertBefore(btn_cancle, element.childNodes[3]);
+
+        document.querySelector("#btn_confirm").addEventListener('click', () => {
+            send_topic({
+                mode: "init_pose_confirm",
+                name: "init_pose"
+            })
+        })
+        one_click_init_pose = false
+        // document.querySelector("#btn_cancle").addEventListener('click', () => {
+        //     send_topic({
+        //         mode: "init_pose_cancle",
+        //         name: "init_pose"
+        //     })
+        // })
     })
+    
+
+    
+
+
+
+
 
     async function clear_marker() {
         send_topic({
