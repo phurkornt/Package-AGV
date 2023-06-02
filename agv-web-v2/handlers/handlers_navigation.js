@@ -58,12 +58,13 @@ exports.navigation_config = (req, res) => {
                 //     script:`roslaunch turtlebot3_navigation turtlebot3_navigation.launch`,
                 //     mode:"start"
                 // });
-
-                // node_manager.send_data({
-                //     topic:"navigation",
-                //     script:`roslaunch turtlebot3_navigation turtlebot3_navigation.launch`,
-                //     mode:"start"
-                // });
+                setTimeout(() => {
+                    node_manager.send_data({
+                        topic:"navigation1",
+                        script:`roslaunch turtlebot3_navigation turtlebot3_navigation.launch`,
+                        mode:"start"
+                    });
+                }, 1000);
 
                 node_manager.send_data({
                     topic:"nav_map",
@@ -80,6 +81,7 @@ exports.navigation_config = (req, res) => {
             // Send plan to node_nav
             let data = fs.readFileSync(`${map_path}/${embed_mapName}.json`);
             plan_waypoint = JSON.parse(data).plan[embed_plan_name];
+
             node_manager.send_nav_data({
                 mode:"set",
                 waypoint:plan_waypoint.waypoint,

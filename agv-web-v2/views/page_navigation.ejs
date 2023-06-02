@@ -107,7 +107,8 @@
                   <tr>
                     <th scope="col">#</th>
                     <th scope="col">ชื่อตำเเหน่ง</th>
-                    <th scope="col">สถานะ</th>
+                    <th scope="col">ประเภท</th>
+                    <!-- <th scope="col">สถานะ</th> -->
                   </tr>
                 </thead>
                 <tbody>
@@ -116,7 +117,18 @@
                   <tr>
                     <td class="text-lg"><%= n++ %></td>
                     <td class="text-lg"><%= i.name %></td>
-                    <td>.</td>
+
+                    <% if(i.type == "pass_point"){%>
+                      <td class="text-lg">
+                        <i class="fas fa-paper-plane"></i>
+                      </td>
+                    <%}else if(i.type == "stop_point"){%>
+                      <td class="text-lg">
+                        <i class="fas fa-flag"></i>
+                      </td>
+                    <%}%>
+
+                    <!-- <td>.</td> -->
                   </tr>
                   <% } %>
                 </tbody>

@@ -68,9 +68,8 @@
       map_name = document.querySelector("#map_name").value
       // Clear value in plan_name
       let tag_plan_name = document.querySelector("#plan_name")
-      
-      for (let i of tag_plan_name.children) {
-        if (i.value != "create")tag_plan_name.removeChild(i);
+      while (tag_plan_name.lastElementChild.value != 'create'){
+        tag_plan_name.removeChild(tag_plan_name.lastElementChild);
       }
 
       if (map_name != '') {
@@ -82,6 +81,7 @@
 
               const select = document.getElementById('plan_name');
               for (let i in response.data.plan) {
+                // console.log("LOOP , ",i);
                 const optionEl = document.createElement('option');
                 optionEl.value = i;
                 optionEl.textContent = i;

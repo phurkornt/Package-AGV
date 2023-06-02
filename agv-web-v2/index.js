@@ -45,7 +45,7 @@ activity_state.writeData(0)
 //----------------------- init -----------------------
 
 
-port = 3000
+port = 8080
 
 app.listen(port,()=>{
     console.log(`Server run at port : ${port}`)
