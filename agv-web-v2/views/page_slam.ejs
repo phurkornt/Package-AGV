@@ -46,7 +46,7 @@
 
 
     function open_slam() {
-
+      console.log("test slam");
       axios.get('/slam_config?mode=open')
         .then(response => {
           if (response.data == 'OK') {

@@ -9,7 +9,7 @@ const session = require('express-session');
 const app = express();
 
 app.set('view engine', 'ejs');
-app.set('views', 'views');
+app.set('views', path.join(__dirname,'views'));
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')))
@@ -17,8 +17,8 @@ app.use(express.static(path.join(__dirname, 'public')))
 // app.use('/admin', express.static(path.join(__dirname, 'public')))
 // app.use('/emp', express.static(path.join(__dirname, 'public')))
 
-app.use("/axios",express.static('node_modules/axios/dist'));
-app.use("/sweetalert2",express.static('node_modules/sweetalert2/dist'));
+app.use("/axios",express.static(path.join(__dirname,'node_modules/axios/dist')));
+app.use("/sweetalert2",express.static(path.join(__dirname,'node_modules/sweetalert2/dist')));
 
 app.use(session({
     secret:'secret',

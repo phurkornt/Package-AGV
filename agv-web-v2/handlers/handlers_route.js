@@ -4,9 +4,10 @@ const activity_state = require('../config/activity_manage');
 
 exports.route = (req, res) => {
     console.log(activity_state.getData());
-    res.render('main_page',{
+    res.render('main_page.ejs',{
         page:"page_routes",
         activity_state:activity_state.getData(),
-        my_ip:ip.address
+        my_ip:ip.address,
+        title:"RoboAC"
     });
 };
